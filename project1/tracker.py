@@ -39,7 +39,9 @@ class RedBallTracker:
 
         combined: np.ndarray = cv.bitwise_or(mask0, mask1)
 
-        mask_clean_open: np.ndarray = cv.morphologyEx(combined, cv.MORPH_OPEN, self._kernel_open)
+        mask_clean_open: np.ndarray = cv.morphologyEx(
+            combined, cv.MORPH_OPEN, self._kernel_open
+        )
         mask_clean_close: np.ndarray = cv.morphologyEx(
             mask_clean_open, cv.MORPH_CLOSE, self._kernel_close
         )
@@ -51,7 +53,9 @@ class RedBallTracker:
         contours, _ = cv.findContours(mask, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
 
         final_contours: list[np.ndarray] = [
-            contour for contour in contours if cv.contourArea(contour) > self._min_contour_area
+            contour
+            for contour in contours
+            if cv.contourArea(contour) > self._min_contour_area
         ]
 
         return final_contours
@@ -66,7 +70,11 @@ class RedBallTracker:
                 2,
             )
             cv.circle(
-                frame, (self._current_pos.centre_x, self._current_pos.centre_y), 2, (0, 0, 255), -1
+                frame,
+                (self._current_pos.centre_x, self._current_pos.centre_y),
+                2,
+                (0, 0, 255),
+                -1,
             )
             cv.putText(
                 frame,
@@ -125,10 +133,13 @@ class RedBallTracker:
                 stencil.fill(0)
                 cv.drawContours(stencil, [contour], -1, 255, -1)
 
-                mean_hsv: tuple[float, float, float, float] = cv.mean(hsv_frame, mask=stencil)
+                mean_hsv: tuple[float, float, float, float] = cv.mean(
+                    hsv_frame, mask=stencil
+                )
 
                 score: float = (
-                    self._saturation_weight * mean_hsv[1] + self._value_weight * mean_hsv[2]
+                    self._saturation_weight * mean_hsv[1]
+                    + self._value_weight * mean_hsv[2]
                 )
 
                 if score > best_score:
